@@ -1,36 +1,50 @@
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useContext } from 'react';
 
 import { MEALS } from '../data/dummy-data';
 import MealDetails from '../components/MealDetails';
 import Subtitle from '../components/MealDetail/Subtitle';
 import List from '../components/MealDetail/List';
 import IconButton from '../components/IconButton';
+import { FavoritesContext } from '../store/context/favorites-context';
 
 function MealDetailScreen({ route, navigation }) {
-    const mealId = route.params.mealId;
+    const favoriteMealsCtx = useContext(FavoritesContext);
 
+    const mealId = route.params.mealId;
     const selectedMeal = MEALS.find((meal) => meal.id === mealId);
 
-    function headerButtonPressHandler() {
-        console.log('Pressed');
+    const mealIsFavorite = favoriteMealsCtx.ids.include(mealId);
+
+    function changeFavoriteStatusHandler() {
+        if (mealIsFavorite) {
+            favoriteMealsCtx.removeFavorite(mealId);
+        } else {
+            favoriteMealsCtx.addFavorite(mealId);
+        }
     }
 
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => {
-                return <IconButton icon='star' color='white' onPress={headerButtonPressHandler} />
+                return (
+                    <IconButton
+                        icon={mealIsFavorite ? 'star' : 'star-outline'}
+                        color='white'
+                        onPress={changeFavoriteStatusHandler}
+                    />
+                );
             }
         });
-    }, [navigation, headerButtonPressHandler]);
+    }, [navigation, changeFavoriteStatusHandler]);
 
     return (
         <ScrollView style={styles.rootContainer}>
             <Image source={{ uri: selectedMeal.imageUrl }} style={styles.image} />
             <Text style={styles.title}>{selectedMeal.title}</Text>
-            <MealDetails 
-                duration={selectedMeal.duration} 
-                complexity={selectedMeal.complexity} 
+            <MealDetails
+                duration={selectedMeal.duration}
+                complexity={selectedMeal.complexity}
                 affordability={selectedMeal.affordability}
                 textStyle={styles.detailText}
             />
