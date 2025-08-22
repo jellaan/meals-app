@@ -2,7 +2,7 @@ import { View, Text, Pressable, Image, StyleSheet, Platform } from "react-native
 
 // screen component 이 아니기 때문에 navigation 이나 route props 를 받을 수 없어서 useNavigation 사용
 import { useNavigation } from "@react-navigation/native";
-import MealDetails from "./MealDetails";
+import MealDetails from "../MealDetails";
 
 function MealItem({ id, title, imageUrl, duration, complexity, affordability }) {
     const navigation = useNavigation();
